@@ -8,7 +8,7 @@ class GetTaskByIdUseCase @Inject constructor(
     private val repository: TasksRepository
 ) {
 
-    suspend operator fun invoke(id: Int): TaskModel {
+    suspend operator fun invoke(id: Int): Result<TaskModel> {
         return repository.getTaskById(id)
     }
 

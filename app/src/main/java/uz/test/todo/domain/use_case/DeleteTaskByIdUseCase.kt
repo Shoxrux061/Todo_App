@@ -7,7 +7,7 @@ class DeleteTaskByIdUseCase @Inject constructor(
     private val repository: TasksRepository
 ) {
 
-    suspend operator fun invoke(id: Int): Boolean {
+    suspend operator fun invoke(id: Int): Result<Boolean> {
         return repository.deleteTask(id)
     }
 

@@ -8,7 +8,7 @@ class UpdateTaskUseCase @Inject constructor(
     private val repository: TasksRepository
 ) {
 
-    suspend operator fun invoke(taskModel: TaskModel): Boolean {
+    suspend operator fun invoke(taskModel: TaskModel): Result<Boolean> {
         return repository.updateTask(taskModel)
     }
 

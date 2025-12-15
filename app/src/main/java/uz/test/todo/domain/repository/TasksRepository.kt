@@ -5,12 +5,12 @@ import uz.test.todo.domain.model.tasks.TaskModel
 
 interface TasksRepository {
 
-    fun getAllTasks(): Flow<List<TaskModel>>
+    fun getAllTasks(): Flow<Result<List<TaskModel>>>
 
-    suspend fun getTaskById(id: Int): TaskModel
+    suspend fun getTaskById(id: Int): Result<TaskModel>
 
-    suspend fun updateTask(taskModel: TaskModel): Boolean
+    suspend fun updateTask(taskModel: TaskModel): Result<Boolean>
 
-    suspend fun deleteTask(id: Int): Boolean
+    suspend fun deleteTask(id: Int): Result<Boolean>
 
 }

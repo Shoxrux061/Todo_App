@@ -3,6 +3,7 @@ package uz.test.todo.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import uz.test.todo.core.utils.safeDatabaseCall
 import uz.test.todo.data.local.room.TaskDao
 import uz.test.todo.data.mapper.toData
 import uz.test.todo.data.mapper.toDomain
@@ -14,24 +15,27 @@ class TaskRepositoryImpl @Inject constructor(
     private val dao: TaskDao
 ) : TasksRepository {
 
-    override fun getAllTasks(): Flow<List<TaskModel>> =
+    override fun getAllTasks(): Flow<Result<List<TaskModel>>> =
         dao.getAllTasks().map { list ->
-            list.map { it.toDomain() }
+            safeDatabaseCall { list.map { it.toDomain() } }
         }
 
-    override suspend fun getTaskById(id: Int): TaskModel {
-        return dao.getTaskById(id)
-            ?.toDomain()
-            ?: throw IllegalStateException("Task with id=$id not found")
+    override suspend fun getTaskById(id: Int): Result<TaskModel> {
+        return safeDatabaseCall {
+            dao.getTaskById(id)?.toDomain()
+                ?: TaskModel()
+        }
     }
 
-
-    override suspend fun updateTask(taskModel: TaskModel): Boolean {
-        return dao.updateTask(taskModel.toData()) > 0
+    override suspend fun updateTask(taskModel: TaskModel): Result<Boolean> {
+        return safeDatabaseCall {
+            dao.updateTask(taskModel.toData()) > 0
+        }
     }
 
-    override suspend fun deleteTask(id: Int): Boolean {
-        return dao.deleteTaskById(id) > 0
+    override suspend fun deleteTask(id: Int): Result<Boolean> {
+        return safeDatabaseCall {
+            dao.deleteTaskById(id) > 0
+        }
     }
-
 }
