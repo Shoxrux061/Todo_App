@@ -7,6 +7,8 @@ plugins {
 
 }
 
+
+
 android {
     namespace = "uz.test.todo"
     compileSdk {
@@ -68,10 +70,11 @@ dependencies {
 
     //Database (Room)
     implementation(libs.room.runtime)
-    implementation(libs.room.compiler)
-    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     //Navigation
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.android.navigation.compose)
+
 
 }

@@ -13,4 +13,6 @@ interface TasksRepository {
 
     suspend fun deleteTask(id: Int): Result<Boolean>
 
+    suspend fun addTask(task: TaskModel): Result<Boolean>
+
 }

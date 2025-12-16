@@ -38,4 +38,10 @@ class TaskRepositoryImpl @Inject constructor(
             dao.deleteTaskById(id) > 0
         }
     }
+
+    override suspend fun addTask(task: TaskModel): Result<Boolean> {
+        return safeDatabaseCall {
+            dao.addTask(task.toData()) > 0
+        }
+    }
 }

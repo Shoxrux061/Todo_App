@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import uz.test.todo.data.local.room.TaskDao
 import uz.test.todo.data.repository.TaskRepositoryImpl
 import uz.test.todo.domain.repository.TasksRepository
+import uz.test.todo.domain.use_case.AddTaskUseCase
 import uz.test.todo.domain.use_case.DeleteTaskByIdUseCase
 import uz.test.todo.domain.use_case.GetAllTasksUseCase
 import uz.test.todo.domain.use_case.GetTaskByIdUseCase
@@ -45,6 +46,12 @@ object DomainModule {
     @Singleton
     fun provideDeleteTaskByIdUseCase(repository: TasksRepository): DeleteTaskByIdUseCase {
         return DeleteTaskByIdUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddTaskUseCase(repository: TasksRepository): AddTaskUseCase {
+        return AddTaskUseCase(repository)
     }
 
 }
