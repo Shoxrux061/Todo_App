@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,16 +20,12 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,12 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
+import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavHostController
 import uz.test.todo.R
 import uz.test.todo.presentation.models.TaskModelUi
 import uz.test.todo.presentation.screens.home_screen.dialog.AddTaskDialog
+import uz.test.todo.presentation.ui.components.SwipeToDelete
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +51,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel, navController: NavHostController)
     val dialogState = uiState.value.dialogState
 
     val tasks = uiState.value.taskList
-    val error = uiState.value.error //TODO
+    val error = uiState.value.error
 
     Box(
         modifier = Modifier
@@ -83,26 +80,38 @@ fun HomeScreen(viewModel: HomeScreenViewModel, navController: NavHostController)
             if (tasks.isNotEmpty()) {
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    items(tasks.size) {
-                        TaskItem(
-                            task = tasks[it],
-                            onClick = {
-                                //TODO
-                            },
-                            onEdit = {
-                                //TODO
-                            },
+                    item {
+                        Spacer(Modifier.height(20.dp))
+                    }
+                    items(
+                        items = tasks,
+                        key = { it.id }
+                    ) { task ->
+                        SwipeToDelete(
                             onDelete = {
-                                //TODO
-                            },
-                            onChangeStatus = {
-                                //TODO
+                                viewModel.deleteTask(task.id)
                             }
-                        )
+                        ) {
+                            TaskItem(
+                                task = task,
+                                onClick = {
+                                    // TODO
+                                },
+                                onEdit = {
+                                    // TODO
+                                },
+                                onChangeStatus = {
+                                    viewModel.toggleIsCompleted(task.id)
+                                },
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
                     }
                 }
+
             } else if (error != null) {
                 Text(
                     error,
@@ -145,23 +154,24 @@ fun HomeScreen(viewModel: HomeScreenViewModel, navController: NavHostController)
 
 @Composable
 fun TaskItem(
+    modifier: Modifier = Modifier,
     onChangeStatus: (Boolean) -> Unit,
-    onDelete: () -> Unit, // TODO
     onClick: () -> Unit,
     onEdit: () -> Unit,
     task: TaskModelUi,
 ) {
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable {
                 onClick()
             },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onTertiary),
+        elevation = CardDefaults.cardElevation(4.dp)
 
-        ) {
+    ) {
 
         Row(
             modifier = Modifier
@@ -195,17 +205,6 @@ fun TaskItem(
             }
 
             Spacer(Modifier.weight(1f))
-
-            IconButton(
-                onClick = {
-                    onEdit()
-                }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_edit),
-                    contentDescription = null
-                )
-            }
 
             Checkbox(
                 checked = task.isCompleted,

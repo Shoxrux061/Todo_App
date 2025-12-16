@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import uz.test.todo.domain.use_case.AddTaskUseCase
 import uz.test.todo.domain.use_case.DeleteTaskByIdUseCase
 import uz.test.todo.domain.use_case.GetAllTasksUseCase
+import uz.test.todo.domain.use_case.ToggleIsCompletedUseCase
 import uz.test.todo.presentation.mapper.toDomain
 import uz.test.todo.presentation.mapper.toUi
 import uz.test.todo.presentation.models.TaskModelUi
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
+    private val toggleIsCompletedUseCase: ToggleIsCompletedUseCase,
     private val getAllTasksUseCase: GetAllTasksUseCase,
     private val deleteTaskUseCase: DeleteTaskByIdUseCase,
     private val addTaskUseCase: AddTaskUseCase
@@ -74,6 +76,17 @@ class HomeScreenViewModel @Inject constructor(
             )
         }
     }
+
+    fun toggleIsCompleted(id: Int) {
+        val task = _uiState.value.taskList.find { it.id == id } ?: return
+        val updatedTask = task.copy(isCompleted = !task.isCompleted)
+
+        viewModelScope.launch {
+            toggleIsCompletedUseCase.invoke(updatedTask.toDomain())
+        }
+    }
+
+
 
     fun changeTitle(newText: String) {
         _uiState.update { currentState ->
